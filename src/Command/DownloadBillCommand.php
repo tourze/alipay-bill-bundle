@@ -2,11 +2,14 @@
 
 namespace AlipayBillBundle\Command;
 
+use Alipay\OpenAPISDK\Api\AlipayDataDataserviceBillDownloadurlApi;
+use Alipay\OpenAPISDK\Util\AlipayConfigUtil;
+use Alipay\OpenAPISDK\Util\Model\AlipayConfig;
 use AlipayBillBundle\Entity\BillUrl;
+use AlipayBillBundle\Enum\BillType;
+use AlipayBillBundle\Repository\AccountRepository;
 use AlipayBillBundle\Repository\BillUrlRepository;
-use AlipayBundle\Enum\BillType;
-use AlipayBundle\Repository\AccountRepository;
-use AlipayBundle\Service\SdkService;
+use AlipayFundAuthBundle\Entity\Account;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use HttpClientBundle\Service\SmartHttpClient;
@@ -31,7 +34,6 @@ class DownloadBillCommand extends Command
 {
     public function __construct(
         private readonly AccountRepository $accountRepository,
-        private readonly SdkService $sdkService,
         private readonly BillUrlRepository $billUrlRepository,
         private readonly LoggerInterface $logger,
         private readonly RandomNameGenerator $randomNameGenerator,
@@ -42,13 +44,29 @@ class DownloadBillCommand extends Command
         parent::__construct();
     }
 
+    private function getAlipayConfigUtil(Account $account): AlipayConfigUtil
+    {
+        // 设置alipayConfig参数（全局设置一次）
+        $alipayConfig = new AlipayConfig();
+        // 设置应用ID
+        $alipayConfig->setAppId($account->getAppId());
+        // 设置应用私钥
+        $alipayConfig->setPrivateKey($account->getRsaPrivateKey());
+        // 设置支付宝公钥
+        $alipayConfig->setAlipayPublicKey($account->getRsaPublicKey());
+
+        return new AlipayConfigUtil($alipayConfig);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // 基本上，没办法下载当天的数据，所以我们总是下载昨天的
         $date = Carbon::yesterday()->startOfDay();
 
         foreach ($this->accountRepository->findBy(['valid' => true]) as $account) {
-            $api = $this->sdkService->getBillDownloadurlApi($account);
+            // 实例化客户端
+            $api = new AlipayDataDataserviceBillDownloadurlApi();
+            $api->setAlipayConfigUtil($this->getAlipayConfigUtil($account));
 
             foreach (BillType::cases() as $billType) {
                 try {

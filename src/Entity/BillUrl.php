@@ -2,9 +2,8 @@
 
 namespace AlipayBillBundle\Entity;
 
+use AlipayBillBundle\Enum\BillType;
 use AlipayBillBundle\Repository\BillUrlRepository;
-use AlipayBundle\Entity\Account;
-use AlipayBundle\Enum\BillType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
