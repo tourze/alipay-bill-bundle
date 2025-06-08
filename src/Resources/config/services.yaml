@@ -6,5 +6,9 @@ services:
 
   AlipayBillBundle\Command\:
     resource: '../../Command/'
+  AlipayBillBundle\Controller\:
+    resource: '../../Controller/'
   AlipayBillBundle\Repository\:
     resource: '../../Repository/'
+  AlipayBillBundle\Service\:
+    resource: '../../Service/'
