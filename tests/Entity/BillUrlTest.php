@@ -78,7 +78,7 @@ class BillUrlTest extends TestCase
     {
         $this->assertNull($this->billUrl->getCreateTime());
         
-        $createTime = new \DateTime();
+        $createTime = new \DateTimeImmutable();
         $this->billUrl->setCreateTime($createTime);
         $this->assertSame($createTime, $this->billUrl->getCreateTime());
     }
@@ -87,7 +87,7 @@ class BillUrlTest extends TestCase
     {
         $this->assertNull($this->billUrl->getUpdateTime());
         
-        $updateTime = new \DateTime();
+        $updateTime = new \DateTimeImmutable();
         $this->billUrl->setUpdateTime($updateTime);
         $this->assertSame($updateTime, $this->billUrl->getUpdateTime());
     }

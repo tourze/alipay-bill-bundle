@@ -108,7 +108,7 @@ class AccountTest extends TestCase
     {
         $this->assertNull($this->account->getCreateTime());
 
-        $createTime = new \DateTime();
+        $createTime = new \DateTimeImmutable();
         $this->account->setCreateTime($createTime);
         $this->assertSame($createTime, $this->account->getCreateTime());
     }
@@ -117,7 +117,7 @@ class AccountTest extends TestCase
     {
         $this->assertNull($this->account->getUpdateTime());
 
-        $updateTime = new \DateTime();
+        $updateTime = new \DateTimeImmutable();
         $this->account->setUpdateTime($updateTime);
         $this->assertSame($updateTime, $this->account->getUpdateTime());
     }
