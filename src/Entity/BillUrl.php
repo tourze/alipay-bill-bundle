@@ -16,7 +16,7 @@ use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 #[ORM\Entity(repositoryClass: BillUrlRepository::class)]
 #[ORM\Table(name: 'alipay_trade_bill_url', options: ['comment' => '账单URL'])]
 #[ORM\UniqueConstraint(name: 'alipay_trade_bill_url_idx_uniq', columns: ['account_id', 'type', 'date'])]
-class BillUrl
+class BillUrl implements \Stringable
 {
     #[ListColumn(order: -1)]
     #[ExportColumn]
@@ -37,7 +37,7 @@ class BillUrl
 
     #[ListColumn]
     #[IndexColumn]
-    #[ORM\Column(type: Types::DATE_MUTABLE, options: ['comment' => '日期'])]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, options: ['comment' => '日期'])]
     private \DateTimeInterface $date;
 
     #[ListColumn]
@@ -49,6 +49,19 @@ class BillUrl
     private ?string $localFile = null;
 
     use TimestampableAware;
+
+    public function __toString(): string
+    {
+        if (null === $this->getId()) {
+            return '';
+        }
+
+        return sprintf('%s - %s - %s', 
+            $this->getAccount()->getName(), 
+            $this->getType()->value, 
+            $this->getDate()->format('Y-m-d')
+        );
+    }
 
     public function getId(): ?int
     {

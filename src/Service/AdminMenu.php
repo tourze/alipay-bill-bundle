@@ -20,7 +20,7 @@ class AdminMenu implements MenuProviderInterface
 
     public function __invoke(ItemInterface $item): void
     {
-        if (!$item->getChild('支付宝账单')) {
+        if (null === $item->getChild('支付宝账单')) {
             $item->addChild('支付宝账单');
         }
 

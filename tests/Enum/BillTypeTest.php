@@ -23,5 +23,4 @@ class BillTypeTest extends TestCase
         $this->assertSame('每日结算到卡的资金对应的明细，下载内容包含批次结算到卡明细文件', BillType::settlementMerge->getLabel());
     }
 
-    
 } 

@@ -32,6 +32,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 #[AsCommand(name: 'alipay-trade:download-bill', description: '账单下载')]
 class DownloadBillCommand extends Command
 {
+    public const NAME = 'alipay-trade:download-bill';
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly BillUrlRepository $billUrlRepository,
@@ -96,7 +97,7 @@ class DownloadBillCommand extends Command
                     'date' => $date,
                     'type' => $billType,
                 ]);
-                if (!$billUrl) {
+                if (null === $billUrl) {
                     $billUrl = new BillUrl();
                     $billUrl->setAccount($account);
                     $billUrl->setDate($date);
