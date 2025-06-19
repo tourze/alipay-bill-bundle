@@ -10,7 +10,7 @@ use AlipayBillBundle\Entity\BillUrl;
 use AlipayBillBundle\Enum\BillType;
 use AlipayBillBundle\Repository\AccountRepository;
 use AlipayBillBundle\Repository\BillUrlRepository;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use HttpClientBundle\Service\SmartHttpClient;
 use League\Flysystem\FilesystemOperator;
@@ -29,7 +29,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask('0 9 * * *')]
 #[AsCronTask('0 10 * * *')]
-#[AsCommand(name: 'alipay-trade:download-bill', description: '账单下载')]
+#[AsCommand(name: self::NAME, description: '账单下载')]
 class DownloadBillCommand extends Command
 {
     public const NAME = 'alipay-trade:download-bill';
@@ -62,7 +62,7 @@ class DownloadBillCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // 基本上，没办法下载当天的数据，所以我们总是下载昨天的
-        $date = Carbon::yesterday()->startOfDay();
+        $date = CarbonImmutable::yesterday()->startOfDay();
 
         foreach ($this->accountRepository->findBy(['valid' => true]) as $account) {
             // 实例化客户端
