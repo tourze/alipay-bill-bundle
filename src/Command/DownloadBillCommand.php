@@ -27,8 +27,8 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  *
  * @see https://opendocs.alipay.com/open/3c9f1bcf_alipay.data.dataservice.bill.downloadurl.query?pathHash=97357e8b&scene=common&ref=api
  */
-#[AsCronTask('0 9 * * *')]
-#[AsCronTask('0 10 * * *')]
+#[AsCronTask(expression: '0 9 * * *')]
+#[AsCronTask(expression: '0 10 * * *')]
 #[AsCommand(name: self::NAME, description: '账单下载')]
 class DownloadBillCommand extends Command
 {

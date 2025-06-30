@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
 use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
@@ -17,11 +17,9 @@ use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 #[ORM\Table(name: 'alipay_fund_auth_trade_account', options: ['comment' => '支付宝账号'])]
 class Account implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
+    use SnowflakeKeyAware;
+    use TimestampableAware;
+    use BlameableAware;
 
     #[TrackColumn]
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, options: ['comment' => '名称'])]
@@ -51,9 +49,6 @@ class Account implements \Stringable
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
     private ?string $updatedFromIp = null;
 
-    use TimestampableAware;
-    use BlameableAware;
-
     public function __toString(): string
     {
         if (null === $this->getId()) {
@@ -74,16 +69,6 @@ class Account implements \Stringable
         $this->valid = $valid;
 
         return $this;
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(?string $id): void
-    {
-        $this->id = $id;
     }
 
     public function getAppId(): ?string

@@ -19,7 +19,6 @@ class AlipayBillBundleTest extends TestCase
         $bundle = new AlipayBillBundle();
         $path = $bundle->getPath();
 
-        $this->assertIsString($path);
         $this->assertStringContainsString('alipay-bill-bundle', $path);
         $this->assertDirectoryExists($path);
     }
