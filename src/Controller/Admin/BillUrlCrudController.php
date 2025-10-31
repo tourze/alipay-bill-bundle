@@ -24,9 +24,11 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 
 /**
  * 支付宝账单管理
+ *
+ * @extends AbstractCrudController<BillUrl>
  */
 #[AdminCrud(routePath: '/alipay-bill/bill-url', routeName: 'alipay_bill_bill_url')]
-class BillUrlCrudController extends AbstractCrudController
+final class BillUrlCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -42,20 +44,27 @@ class BillUrlCrudController extends AbstractCrudController
             ->setPageTitle('detail', '查看支付宝账单')
             ->setHelp('index', '管理支付宝账单下载记录，查看各类型账单的下载情况')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['account.name', 'account.appId']);
+            ->setSearchFields(['account.name', 'account.appId'])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')
             ->setMaxLength(9999)
-            ->onlyOnIndex();
+            ->onlyOnIndex()
+        ;
 
         yield AssociationField::new('account', '支付宝应用')
             ->setRequired(true)
             ->formatValue(function ($value) {
-                return $value ? $value->getName() : '';
-            });
+                if (!is_object($value)) {
+                    return '';
+                }
+
+                return method_exists($value, 'getName') ? $value->getName() : '';
+            })
+        ;
 
         yield ChoiceField::new('type', '账单类型')
             ->setFormType(EnumType::class)
@@ -63,15 +72,18 @@ class BillUrlCrudController extends AbstractCrudController
             ->formatValue(function ($value) {
                 return $value instanceof BillType ? $value->getLabel() : '';
             })
-            ->setRequired(true);
+            ->setRequired(true)
+        ;
 
         yield DateField::new('date', '账单日期')
             ->setRequired(true)
-            ->setHelp('账单对应的日期');
+            ->setHelp('账单对应的日期')
+        ;
 
         yield UrlField::new('downloadUrl', '原始下载地址')
             ->hideOnIndex()
-            ->setHelp('支付宝提供的临时下载链接，30秒后失效');
+            ->setHelp('支付宝提供的临时下载链接，30秒后失效')
+        ;
 
         yield TextField::new('localFile', '本地文件')
             ->setHelp('已下载到本地存储的文件路径')
@@ -79,27 +91,34 @@ class BillUrlCrudController extends AbstractCrudController
                 if (!$value) {
                     return '<span class="badge badge-warning">未下载</span>';
                 }
-                return '<span class="badge badge-success">已下载</span><br><small>' . $value . '</small>';
-            });
+
+                $fileName = (is_string($value) || is_numeric($value)) ? (string) $value : '';
+
+                return '<span class="badge badge-success">已下载</span><br><small>' . $fileName . '</small>';
+            })
+        ;
 
         yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
             ->formatValue(function ($value) {
                 return $value instanceof \DateTimeInterface ? $value->format('Y-m-d H:i:s') : '';
-            });
+            })
+        ;
 
         yield DateTimeField::new('updateTime', '更新时间')
             ->hideOnForm()
             ->formatValue(function ($value) {
                 return $value instanceof \DateTimeInterface ? $value->format('Y-m-d H:i:s') : '';
-            });
+            })
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->disable(Action::NEW, Action::EDIT, Action::DELETE);
+            ->disable(Action::NEW, Action::EDIT, Action::DELETE)
+        ;
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -113,6 +132,7 @@ class BillUrlCrudController extends AbstractCrudController
             ->add(EntityFilter::new('account', '支付宝应用'))
             ->add(ChoiceFilter::new('type', '账单类型')->setChoices($choices))
             ->add(DateTimeFilter::new('createTime', '创建时间'))
-            ->add(DateTimeFilter::new('updateTime', '更新时间'));
+            ->add(DateTimeFilter::new('updateTime', '更新时间'))
+        ;
     }
-} 
+}

@@ -1,25 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AlipayBillBundle\Tests;
 
 use AlipayBillBundle\AlipayBillBundle;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractBundleTestCase;
 
-class AlipayBillBundleTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(AlipayBillBundle::class)]
+#[RunTestsInSeparateProcesses]
+final class AlipayBillBundleTest extends AbstractBundleTestCase
 {
-    public function testInstanceOfBundle()
-    {
-        $bundle = new AlipayBillBundle();
-        $this->assertInstanceOf(Bundle::class, $bundle);
-    }
-
-    public function testGetPath()
-    {
-        $bundle = new AlipayBillBundle();
-        $path = $bundle->getPath();
-
-        $this->assertStringContainsString('alipay-bill-bundle', $path);
-        $this->assertDirectoryExists($path);
-    }
 }

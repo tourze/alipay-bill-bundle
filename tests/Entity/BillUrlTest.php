@@ -5,90 +5,53 @@ namespace AlipayBillBundle\Tests\Entity;
 use AlipayBillBundle\Entity\Account;
 use AlipayBillBundle\Entity\BillUrl;
 use AlipayBillBundle\Enum\BillType;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 
-class BillUrlTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(BillUrl::class)]
+final class BillUrlTest extends AbstractEntityTestCase
 {
-    private BillUrl $billUrl;
-    private Account $account;
-
-    protected function setUp(): void
+    /**
+     * 创建被测实体的一个实例.
+     */
+    protected function createEntity(): object
     {
-        $this->billUrl = new BillUrl();
-        $this->account = new Account();
-        $this->account->setId('123456789');
-        $this->account->setName('测试账号');
-        $this->account->setAppId('2021000000000000');
+        return new BillUrl();
     }
 
-    public function testGetterAndSetterForId()
+    /**
+     * 提供属性及其样本值的 Data Provider.
+     *
+     * @return iterable<string, array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
     {
-        $this->assertEquals(0, $this->billUrl->getId());
-        
-        $id = 123;
-        $this->billUrl->setId($id);
-        $this->assertSame($id, $this->billUrl->getId());
+        $account = new Account();
+        $account->setId('123456789');
+        $account->setName('测试账号');
+        $account->setAppId('2021000000000000');
+
+        yield 'id' => ['id', 123];
+        yield 'account' => ['account', $account];
+        yield 'type' => ['type', BillType::signcustomer];
+        yield 'typeMerchant' => ['type', BillType::merchant_act];
+        yield 'typeSettlement' => ['type', BillType::settlementMerge];
+        yield 'date' => ['date', new \DateTime('2023-01-01')];
+        yield 'downloadUrl' => ['downloadUrl', 'https://dwbillcenter.alipay.com/downloadBillFile.resource?bizType=trade&userId=2088123456789&fileType=csv&bizDates=20230101&downloadFileName=20230101.csv&fileId=xxx'];
+        yield 'localFile' => ['localFile', 'alipay-bill/20230101-123456.zip'];
+        yield 'createTime' => ['createTime', new \DateTimeImmutable()];
+        yield 'updateTime' => ['updateTime', new \DateTimeImmutable()];
     }
 
-    public function testGetterAndSetterForAccount()
+    public function testDefaultType(): void
     {
-        $this->billUrl->setAccount($this->account);
-        $this->assertSame($this->account, $this->billUrl->getAccount());
-    }
+        $billUrl = $this->createEntity();
+        $this->assertInstanceOf(BillUrl::class, $billUrl);
 
-    public function testGetterAndSetterForType()
-    {
         // 默认类型应为trade
-        $this->assertSame(BillType::trade, $this->billUrl->getType());
-        
-        $this->billUrl->setType(BillType::signcustomer);
-        $this->assertSame(BillType::signcustomer, $this->billUrl->getType());
-        
-        $this->billUrl->setType(BillType::merchant_act);
-        $this->assertSame(BillType::merchant_act, $this->billUrl->getType());
-        
-        $this->billUrl->setType(BillType::settlementMerge);
-        $this->assertSame(BillType::settlementMerge, $this->billUrl->getType());
+        $this->assertSame(BillType::trade, $billUrl->getType());
     }
-
-    public function testGetterAndSetterForDate()
-    {
-        $date = new \DateTime('2023-01-01');
-        $this->billUrl->setDate($date);
-        $this->assertSame($date, $this->billUrl->getDate());
-    }
-
-    public function testGetterAndSetterForDownloadUrl()
-    {
-        $downloadUrl = 'https://dwbillcenter.alipay.com/downloadBillFile.resource?bizType=trade&userId=2088123456789&fileType=csv&bizDates=20230101&downloadFileName=20230101.csv&fileId=xxx';
-        $this->billUrl->setDownloadUrl($downloadUrl);
-        $this->assertSame($downloadUrl, $this->billUrl->getDownloadUrl());
-    }
-
-    public function testGetterAndSetterForLocalFile()
-    {
-        $this->assertNull($this->billUrl->getLocalFile());
-        
-        $localFile = 'alipay-bill/20230101-123456.zip';
-        $this->billUrl->setLocalFile($localFile);
-        $this->assertSame($localFile, $this->billUrl->getLocalFile());
-    }
-
-    public function testGetterAndSetterForCreateTime()
-    {
-        $this->assertNull($this->billUrl->getCreateTime());
-        
-        $createTime = new \DateTimeImmutable();
-        $this->billUrl->setCreateTime($createTime);
-        $this->assertSame($createTime, $this->billUrl->getCreateTime());
-    }
-
-    public function testGetterAndSetterForUpdateTime()
-    {
-        $this->assertNull($this->billUrl->getUpdateTime());
-        
-        $updateTime = new \DateTimeImmutable();
-        $this->billUrl->setUpdateTime($updateTime);
-        $this->assertSame($updateTime, $this->billUrl->getUpdateTime());
-    }
-} 
+}

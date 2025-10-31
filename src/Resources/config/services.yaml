@@ -12,3 +12,5 @@ services:
     resource: '../../Repository/'
   AlipayBillBundle\Service\:
     resource: '../../Service/'
+
+  Tourze\FileNameGenerator\RandomNameGenerator: ~

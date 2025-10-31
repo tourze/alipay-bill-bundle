@@ -5,9 +5,9 @@ namespace AlipayBillBundle\Entity;
 use AlipayBillBundle\Repository\AccountRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
-use Tourze\DoctrineIpBundle\Attribute\UpdateIpColumn;
+use Tourze\DoctrineIpBundle\Traits\IpTraceableAware;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
@@ -20,34 +20,32 @@ class Account implements \Stringable
     use SnowflakeKeyAware;
     use TimestampableAware;
     use BlameableAware;
+    use IpTraceableAware;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     #[TrackColumn]
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, options: ['comment' => '名称'])]
     private string $name;
 
+    #[Assert\Length(max: 64)]
     #[TrackColumn]
     #[ORM\Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => 'AppID'])]
     private ?string $appId = null;
 
+    #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => 'RSA私钥'])]
     private ?string $rsaPrivateKey = null;
 
+    #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => 'RSA公钥'])]
     private ?string $rsaPublicKey = null;
 
+    #[Assert\NotNull]
     #[IndexColumn]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效'])]
     private ?bool $valid = false;
-
-
-    #[CreateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
-    private ?string $createdFromIp = null;
-
-    #[UpdateIpColumn]
-    #[ORM\Column(length: 128, nullable: true, options: ['comment' => '更新时IP'])]
-    private ?string $updatedFromIp = null;
 
     public function __toString(): string
     {
@@ -58,17 +56,14 @@ class Account implements \Stringable
         return $this->getName();
     }
 
-
     public function isValid(): ?bool
     {
         return $this->valid;
     }
 
-    public function setValid(?bool $valid): self
+    public function setValid(?bool $valid): void
     {
         $this->valid = $valid;
-
-        return $this;
     }
 
     public function getAppId(): ?string
@@ -76,11 +71,9 @@ class Account implements \Stringable
         return $this->appId;
     }
 
-    public function setAppId(string $appId): self
+    public function setAppId(string $appId): void
     {
         $this->appId = $appId;
-
-        return $this;
     }
 
     public function getName(): string
@@ -88,11 +81,9 @@ class Account implements \Stringable
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getRsaPrivateKey(): ?string
@@ -100,11 +91,9 @@ class Account implements \Stringable
         return $this->rsaPrivateKey;
     }
 
-    public function setRsaPrivateKey(?string $rsaPrivateKey): static
+    public function setRsaPrivateKey(?string $rsaPrivateKey): void
     {
         $this->rsaPrivateKey = $rsaPrivateKey;
-
-        return $this;
     }
 
     public function getRsaPublicKey(): ?string
@@ -112,34 +101,8 @@ class Account implements \Stringable
         return $this->rsaPublicKey;
     }
 
-    public function setRsaPublicKey(?string $rsaPublicKey): static
+    public function setRsaPublicKey(?string $rsaPublicKey): void
     {
         $this->rsaPublicKey = $rsaPublicKey;
-
-        return $this;
-    }
-
-    public function setCreatedFromIp(?string $createdFromIp): self
-    {
-        $this->createdFromIp = $createdFromIp;
-
-        return $this;
-    }
-
-    public function getCreatedFromIp(): ?string
-    {
-        return $this->createdFromIp;
-    }
-
-    public function setUpdatedFromIp(?string $updatedFromIp): self
-    {
-        $this->updatedFromIp = $updatedFromIp;
-
-        return $this;
-    }
-
-    public function getUpdatedFromIp(): ?string
-    {
-        return $this->updatedFromIp;
     }
 }

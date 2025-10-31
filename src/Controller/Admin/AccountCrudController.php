@@ -20,9 +20,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 
 /**
  * 支付宝账号管理
+ *
+ * @extends AbstractCrudController<Account>
  */
 #[AdminCrud(routePath: '/alipay-bill/account', routeName: 'alipay_bill_account')]
-class AccountCrudController extends AbstractCrudController
+final class AccountCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -40,53 +42,63 @@ class AccountCrudController extends AbstractCrudController
             ->setPageTitle('detail', '查看支付宝账号')
             ->setHelp('index', '管理支付宝账号配置，用于下载账单数据')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['name', 'appId']);
+            ->setSearchFields(['name', 'appId'])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')
             ->setMaxLength(9999)
-            ->onlyOnIndex();
+            ->onlyOnIndex()
+        ;
 
         yield TextField::new('name', '名称')
             ->setRequired(true)
-            ->setHelp('账号的标识名称，用于区分不同的支付宝应用');
+            ->setHelp('账号的标识名称，用于区分不同的支付宝应用')
+        ;
 
         yield TextField::new('appId', 'AppID')
             ->setRequired(true)
-            ->setHelp('支付宝应用的AppID');
+            ->setHelp('支付宝应用的AppID')
+        ;
 
         yield TextareaField::new('rsaPrivateKey', '应用私钥')
             ->setRequired(false)
             ->hideOnIndex()
-            ->setHelp('应用的RSA私钥，用于API调用签名');
+            ->setHelp('应用的RSA私钥，用于API调用签名')
+        ;
 
         yield TextareaField::new('rsaPublicKey', '支付宝公钥')
             ->setRequired(false)
             ->hideOnIndex()
-            ->setHelp('支付宝的RSA公钥，用于验证签名');
+            ->setHelp('支付宝的RSA公钥，用于验证签名')
+        ;
 
         yield BooleanField::new('valid', '有效状态')
-            ->setHelp('是否启用该账号进行账单下载');
+            ->setHelp('是否启用该账号进行账单下载')
+        ;
 
         yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
             ->formatValue(function ($value) {
                 return $value instanceof \DateTimeInterface ? $value->format('Y-m-d H:i:s') : '';
-            });
+            })
+        ;
 
         yield DateTimeField::new('updateTime', '更新时间')
             ->hideOnForm()
             ->formatValue(function ($value) {
                 return $value instanceof \DateTimeInterface ? $value->format('Y-m-d H:i:s') : '';
-            });
+            })
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+        ;
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -96,6 +108,7 @@ class AccountCrudController extends AbstractCrudController
             ->add(TextFilter::new('appId', 'AppID'))
             ->add(BooleanFilter::new('valid', '有效状态'))
             ->add(DateTimeFilter::new('createTime', '创建时间'))
-            ->add(DateTimeFilter::new('updateTime', '更新时间'));
+            ->add(DateTimeFilter::new('updateTime', '更新时间'))
+        ;
     }
-} 
+}

@@ -11,10 +11,10 @@ use Tourze\EasyAdminMenuBundle\Service\MenuProviderInterface;
 /**
  * 支付宝账单菜单服务
  */
-class AdminMenu implements MenuProviderInterface
+readonly class AdminMenu implements MenuProviderInterface
 {
     public function __construct(
-        private readonly LinkGeneratorInterface $linkGenerator,
+        private LinkGeneratorInterface $linkGenerator,
     ) {
     }
 
@@ -25,15 +25,20 @@ class AdminMenu implements MenuProviderInterface
         }
 
         $alipayBillMenu = $item->getChild('支付宝账单');
-        
+        if (null === $alipayBillMenu) {
+            return;
+        }
+
         // 账号管理菜单
         $alipayBillMenu->addChild('账号管理')
             ->setUri($this->linkGenerator->getCurdListPage(Account::class))
-            ->setAttribute('icon', 'fas fa-user-circle');
-        
+            ->setAttribute('icon', 'fas fa-user-circle')
+        ;
+
         // 账单管理菜单
         $alipayBillMenu->addChild('账单管理')
             ->setUri($this->linkGenerator->getCurdListPage(BillUrl::class))
-            ->setAttribute('icon', 'fas fa-file-invoice');
+            ->setAttribute('icon', 'fas fa-file-invoice')
+        ;
     }
 }

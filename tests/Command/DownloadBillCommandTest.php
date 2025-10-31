@@ -4,73 +4,48 @@ namespace AlipayBillBundle\Tests\Command;
 
 use AlipayBillBundle\Command\DownloadBillCommand;
 use AlipayBillBundle\Repository\AccountRepository;
-use AlipayBillBundle\Repository\BillUrlRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use HttpClientBundle\Service\SmartHttpClient;
-use League\Flysystem\FilesystemOperator;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tourze\FileNameGenerator\RandomNameGenerator;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractCommandTestCase;
 
-class DownloadBillCommandTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(DownloadBillCommand::class)]
+#[RunTestsInSeparateProcesses]
+final class DownloadBillCommandTest extends AbstractCommandTestCase
 {
-    private AccountRepository|MockObject $accountRepository;
-    private BillUrlRepository|MockObject $billUrlRepository;
-    private LoggerInterface|MockObject $logger;
-    private RandomNameGenerator|MockObject $randomNameGenerator;
-    private FilesystemOperator|MockObject $filesystem;
-    private SmartHttpClient|MockObject $httpClient;
-    private EntityManagerInterface|MockObject $entityManager;
-    private DownloadBillCommand $command;
-
-    protected function setUp(): void
+    protected function getCommandTester(): CommandTester
     {
-        $this->accountRepository = $this->createMock(AccountRepository::class);
-        $this->billUrlRepository = $this->createMock(BillUrlRepository::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->randomNameGenerator = $this->createMock(RandomNameGenerator::class);
-        $this->filesystem = $this->createMock(FilesystemOperator::class);
-        $this->httpClient = $this->createMock(SmartHttpClient::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $command = self::getService(DownloadBillCommand::class);
 
-        $this->command = new DownloadBillCommand(
-            $this->accountRepository,
-            $this->billUrlRepository,
-            $this->logger,
-            $this->randomNameGenerator,
-            $this->filesystem,
-            $this->httpClient,
-            $this->entityManager
-        );
+        return new CommandTester($command);
     }
 
-    public function testCommandConfiguration()
+    protected function onSetUp(): void
     {
-        $this->assertInstanceOf(Command::class, $this->command);
-        $this->assertEquals('alipay-trade:download-bill', $this->command->getName());
-        $this->assertEquals('账单下载', $this->command->getDescription());
+        $accountRepository = self::getService(AccountRepository::class);
+
+        $accounts = $accountRepository->findBy(['valid' => true]);
+        foreach ($accounts as $account) {
+            $account->setValid(false);
+        }
+        self::getEntityManager()->flush();
     }
 
-    public function testCommandExecution()
+    public function testCommandExecution(): void
     {
-        // 由于该命令依赖于外部API，我们简化测试，仅确认可以初始化并执行
-        // 对于复杂的业务逻辑，实际项目中应该使用集成测试
+        $commandTester = $this->getCommandTester();
 
-        // 设置账户仓库返回空数组
-        $this->accountRepository->method('findBy')
-            ->with(['valid' => true])
-            ->willReturn([]);
-
-        $application = new Application();
-        $application->add($this->command);
-
-        $commandTester = new CommandTester($this->command);
         $exitCode = $commandTester->execute([]);
 
-        $this->assertEquals(Command::SUCCESS, $exitCode);
+        $this->assertSame(0, $exitCode);
+    }
+
+    public function testCommandHasCorrectName(): void
+    {
+        $command = self::getService(DownloadBillCommand::class);
+        $this->assertSame('alipay-trade:download-bill', $command->getName());
     }
 }
