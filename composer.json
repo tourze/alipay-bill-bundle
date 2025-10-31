@@ -32,7 +32,7 @@
     "tourze/doctrine-track-bundle": "0.1.*",
     "tourze/doctrine-user-bundle": "0.0.*",
     "tourze/easy-admin-menu-bundle": "0.1.*",
-    "tourze/enum-extra": "0.1.*",
+    "tourze/enum-extra": "1.*",
     "tourze/file-name-generator": "0.0.*",
     "tourze/file-storage-bundle": "0.0.*",
     "tourze/http-client-bundle": "0.1.*",
