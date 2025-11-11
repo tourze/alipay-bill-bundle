@@ -30,14 +30,14 @@
     "tourze/doctrine-ip-bundle": "1.1.*",
     "tourze/doctrine-snowflake-bundle": "1.1.*",
     "tourze/doctrine-timestamp-bundle": "1.1.*",
-    "tourze/doctrine-track-bundle": "1.0.*",
+    "tourze/doctrine-track-bundle": "1.1.*",
     "tourze/doctrine-user-bundle": "1.0.*",
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/enum-extra": "1.0.*",
     "tourze/file-name-generator": "1.0.*",
     "tourze/file-storage-bundle": "1.0.*",
-    "tourze/http-client-bundle": "1.0.*",
-    "tourze/symfony-cron-job-bundle": "1.0.*",
+    "tourze/http-client-bundle": "1.1.*",
+    "tourze/symfony-cron-job-bundle": "1.1.*",
     "tourze/symfony-dependency-service-loader": "1.0.*"
   },
   "require-dev": {
