@@ -4,7 +4,7 @@ namespace AlipayBillBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class AlipayBillExtension extends AutoExtension
+final class AlipayBillExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {

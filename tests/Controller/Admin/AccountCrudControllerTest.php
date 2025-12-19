@@ -205,19 +205,12 @@ final class AccountCrudControllerTest extends AbstractEasyAdminControllerTestCas
 
             $message = 'Page content should not contain "Inaccessible" field value, check your field configuration.';
 
-            if ($containsInaccessibleField) {
-                $context = $this->extractHtmlContext($pageContent, 'Inaccessible');
-                if (null !== $context) {
-                    $message .= PHP_EOL . 'HTML 上下文（目标行及其前 5 行）：' . PHP_EOL . $context;
-                }
-            }
-
             $this->assertFalse($containsInaccessibleField, $message);
         } catch (\TypeError $e) {
             // EasyAdmin 4.x 在某些情况下会抛出 TypeError
             // 当 AdminContext::getEntity() 在 INDEX 页面返回 null 时
             if (str_contains($e->getMessage(), 'AdminContext::getEntity()')) {
-                $this->markTestSkipped('EasyAdmin 4.x 兼容性问题：AdminContext::getEntity() 在 INDEX 页面返回 null');
+                self::markTestSkipped('EasyAdmin 4.x 兼容性问题：AdminContext::getEntity() 在 INDEX 页面返回 null');
             }
             throw $e;
         }

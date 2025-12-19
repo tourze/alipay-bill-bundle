@@ -7,7 +7,7 @@ use HttpClientBundle\HttpClientBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
-use Tourze\FileStorageBundle\FileStorageBundle;
+use Tourze\FlysystemBundle\FlysystemBundle;
 use Tourze\Symfony\RuntimeContextBundle\RuntimeContextBundle;
 
 class AlipayBillBundle extends Bundle implements BundleDependencyInterface
@@ -19,7 +19,7 @@ class AlipayBillBundle extends Bundle implements BundleDependencyInterface
             EasyAdminMenuBundle::class => ['all' => true],
             HttpClientBundle::class => ['all' => true],
             RuntimeContextBundle::class => ['all' => true],
-            FileStorageBundle::class => ['all' => true],
+            FlysystemBundle::class => ['all' => true],
         ];
     }
 }
